@@ -35,19 +35,44 @@ services:
     networks:
       - kafka-net
 
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - kafka-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     container_name: go-app
+    env_file:
+      - .env
     ports:
-      - "8080:8080"
-    environment:
-      CONFIG_PATH: /app/config/config.yaml
-    restart:
-      unless-stopped
+      - "${APP_PORT}:8080"
+    restart: unless-stopped
+    volumes:
+      - ./.env:/app/.env:ro
     networks:
       - kafka-net
 
@@ -62,12 +87,15 @@ services:
       - |
         kafka-topics --create \
           --if-not-exists \
-          --topic events \
+          --topic ${KAFKA_TOPIC} \
           --bootstrap-server kafka:9092 \
           --partitions 1 \
           --replication-factor 1
     networks:
       - kafka-net
+
+volumes:
+  pgdata:
 
 networks:
   kafka-net:

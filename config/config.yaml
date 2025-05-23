@@ -1,7 +1,0 @@
-server:
-  port: 8080
-log:
-  level: "info"
-kafka:
-  topic: "events"
-  broker: "kafka:9092"
