@@ -7,10 +7,12 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
-func NewRouter(logger *zap.Logger, producer *kafka.Producer) *chi.Mux {
+func NewRouter(logger *zap.Logger, producer *kafka.Producer, database *gorm.DB) *chi.Mux {
 	// Create router
 	r := chi.NewRouter()
 
@@ -20,8 +22,17 @@ func NewRouter(logger *zap.Logger, producer *kafka.Producer) *chi.Mux {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 
+	// CORS
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:8081"},
+		AllowedMethods:   []string{"GET"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true,
+	}))
+
 	// Routes
 	r.Post("/event", handler.MakeEventHandler(logger, producer))
+	r.Get("/logs", handler.MakeLogsHandler(database, logger))
 
 	return r
 }
