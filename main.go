@@ -8,6 +8,7 @@ import (
 	"event-tracker/internal/handler"
 	"event-tracker/internal/kafka"
 	"event-tracker/internal/logger"
+	"event-tracker/internal/router"
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
@@ -63,6 +64,9 @@ func main() {
 	// HTTP handlers
 	http.HandleFunc("/event", handler.MakeEventHandler(log, producer))
 
+	// Router init
+	r := router.NewRouter(log, producer)
+
 	//Start server
 	port := viper.GetString("APP_PORT")
 	if port == "" {
@@ -70,7 +74,7 @@ func main() {
 	}
 
 	log.Info("Starting server", zap.String("port", port))
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	if err := http.ListenAndServe(":"+port, r); err != nil {
 		log.Fatal("Server failed", zap.Error(err))
 	}
 }
