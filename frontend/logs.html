@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event logs</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <h2>Logs view</h2>
+
+        <form id="log-form">
+            <label for="start-date">From:</label>
+            <input type="datetime-local" id="start-date" name="start-date" required />
+
+            <label for="end-date">To:</label>
+            <input type="datetime-local" id="end-date" name="end-date" required />
+
+            <button type="submit">Show logs</button>
+        </form>
+
+        <table id="logs-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>User</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="logs-body">
+                <!-- JS will inject logs here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="logs"></div>
+    <script src="logs.js"></script>
+</body>
+
+</html>

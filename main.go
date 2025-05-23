@@ -65,7 +65,7 @@ func main() {
 	http.HandleFunc("/event", handler.MakeEventHandler(log, producer))
 
 	// Router init
-	r := router.NewRouter(log, producer)
+	r := router.NewRouter(log, producer, database)
 
 	//Start server
 	port := viper.GetString("APP_PORT")
