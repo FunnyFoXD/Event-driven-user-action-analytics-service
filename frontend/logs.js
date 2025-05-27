@@ -1,31 +1,33 @@
+function formatDate(isoString) {
+    const date = new Date(isoString);
+    return date.toLocaleString();
+}
+
 async function fetchLogs() {
     try {
         const response = await fetch('http://localhost:8080/logs');
         const logs = await response.json();
 
-        const tableBody = document.getElementById('logs-body');
+        const tableBody = document.querySelector('#logs-table tbody');
+
+        // if (!tableBody) {
+        //     console.error("Table body not found! Check HTML structure.");
+        //     return;
+        // }
+
         tableBody.innerHTML = ''; // Clear
 
         logs.forEach(log => {
             const row = document.createElement('tr');
-
-            const dateCell = document.createElement('td');
-            dateCell.textContent = log.CreatedAt;
-
-            const userCell = document.createElement('td');
-            userCell.textContent = log.user_id;
-
-            const actionCell = document.createElement('td');
-            actionCell.textContent = log.action;
-
-            row.appendChild(dateCell);
-            row.appendChild(userCell);
-            row.appendChild(actionCell);
-
+            row.innerHTML = `
+                <td>${formatDate(log.CreatedAt)}</td>
+                <td>${log.user_id}</td>
+                <td>${log.action}</td>
+            `;
             tableBody.appendChild(row);
         });
-    } catch (err) {
-        console.error('Error download logs:', err);
+    } catch (error) {
+        console.error('Error download logs:', error);
     }
 }
 
