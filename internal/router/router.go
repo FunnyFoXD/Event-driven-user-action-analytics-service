@@ -25,7 +25,7 @@ func NewRouter(logger *zap.Logger, producer *kafka.Producer, database *gorm.DB) 
 	// CORS
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:8081"},
-		AllowedMethods:   []string{"GET"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
 	}))
